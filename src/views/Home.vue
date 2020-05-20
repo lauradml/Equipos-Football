@@ -4,6 +4,7 @@
     <div class="shearch">
       <AppSearch @sendFilterData="sendInputValue"></AppSearch>
     </div>
+    <a name="up"></a>
     <ul>
       <li class="item" v-for="card in listaFiltrada" :key="card.id">
         <el-col :span="8">
@@ -21,11 +22,11 @@
             </div>
             <el-button
               type="primary"
-              icon="el-icon-star-off"
               @click="addfavoritos(card.school)"
             >Añadir a favoritos {{ isCardFav(card) ? '⭐️' : '⚪️' }}</el-button>
             <el-button
-              type="primary" plain
+              type="primary"
+              plain
               icon="el-icon-s-promotion"
               @click="goToDetail(card.school)"
             >Detalle</el-button>
@@ -33,6 +34,21 @@
         </el-col>
       </li>
     </ul>
+    <div>
+      <a href="#up">
+      <el-pagination
+        layout="prev, pager, next"
+        :total="totalpage"
+        :current-page="currentPage"
+        :page-size="pageSize"
+        :page-sizes="[10, 20, 30,40]"
+        prev-text="Anterior <"
+        next-text="> Siguiente"
+        @current-change="handleCurrentChange"
+        @size-change="handleSizeChange"
+      ></el-pagination>
+      </a>
+    </div>
   </div>
 </template>
 
@@ -51,6 +67,8 @@ export default {
       textButton: "Buscar",
       showEdit: null,
       detail: [],
+      pageSize: 9,
+      currentPage: 1,
       favoritosList: []
     };
   },
@@ -67,14 +85,20 @@ export default {
     }
   },
   methods: {
+    handleSizeChange(size) {
+      this.pageSize = size;
+    },
+    handleCurrentChange(val) {
+      this.currentPage = val;
+    },
     isCardFav(card) {
-      let star = false
+      let star = false;
       this.favoritosList.forEach(element => {
         if (element.school === card.school) {
           star = true;
         }
-      }) 
-      return star
+      });
+      return star;
     },
     sendInputValue(input) {
       this.$store.dispatch("filterName", input);
@@ -112,14 +136,26 @@ export default {
       list: "teamsList",
       filterName: "filterName"
     }),
+    totalpage() {
+      let list = this.$store.getters.filteredList;
+      return list.length;
+    },
     listaFiltrada: function() {
-      return this.$store.getters.filteredList;
+      let list = this.$store.getters.filteredList;
+      return list.slice(
+        (this.currentPage - 1) * this.pageSize,
+        this.pageSize * this.currentPage
+      );
     }
   }
 };
 </script>
 <style scoped>
-.titel{
+.home {
+  display: flex;
+  flex-direction: column;
+}
+.titel {
   color: rgb(19, 85, 151);
 }
 .item {
