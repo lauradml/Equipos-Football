@@ -3,6 +3,7 @@
     <h1 class="titel">listado de equipos</h1>
     <div class="shearch">
       <AppSearch @sendFilterData="sendInputValue"></AppSearch>
+      <p v-if="this.search !=''">Actualmente hay una seleccion con: {{this.search}}</p>
     </div>
     <a name="up"></a>
     <ul>
@@ -36,17 +37,17 @@
     </ul>
     <div>
       <a href="#up">
-      <el-pagination
-        layout="prev, pager, next"
-        :total="totalpage"
-        :current-page="currentPage"
-        :page-size="pageSize"
-        :page-sizes="[10, 20, 30,40]"
-        prev-text="Anterior <"
-        next-text="> Siguiente"
-        @current-change="handleCurrentChange"
-        @size-change="handleSizeChange"
-      ></el-pagination>
+        <el-pagination
+          layout="prev, pager, next"
+          :total="totalpage"
+          :current-page="currentPage"
+          :page-size="pageSize"
+          :page-sizes="[10, 20, 30,40]"
+          prev-text="Anterior <"
+          next-text="> Siguiente"
+          @current-change="handleCurrentChange"
+          @size-change="handleSizeChange"
+        ></el-pagination>
       </a>
     </div>
   </div>
@@ -69,13 +70,15 @@ export default {
       detail: [],
       pageSize: 9,
       currentPage: 1,
-      favoritosList: []
+      // favoritosList: [],
+      loading: true,
+      search: ""
     };
   },
   created() {
     this.$store.dispatch("getTeams");
     this.detail = this.$store.state.detail;
-    this.favoritosList = this.$store.state.favoritosList;
+    // this.favoritosList = this.$store.state.favoritosList;
     if (localStorage.getItem("favoritosList")) {
       try {
         this.favoritosList = JSON.parse(localStorage.getItem("favoritosList"));
@@ -83,6 +86,7 @@ export default {
         localStorage.removeItem("favoritosList");
       }
     }
+    this.search = this.$store.state.filterName;
   },
   methods: {
     handleSizeChange(size) {
@@ -102,6 +106,8 @@ export default {
     },
     sendInputValue(input) {
       this.$store.dispatch("filterName", input);
+      this.search = this.$store.state.filterName;
+
     },
     openTextFavorito() {
       this.showEdit = true;
@@ -133,8 +139,8 @@ export default {
   },
   computed: {
     ...mapState({
-      list: "teamsList",
-      filterName: "filterName"
+      filterName: "filterName",
+      favoritosList: "favoritosList"
     }),
     totalpage() {
       let list = this.$store.getters.filteredList;
@@ -146,6 +152,14 @@ export default {
         (this.currentPage - 1) * this.pageSize,
         this.pageSize * this.currentPage
       );
+    },
+    favoritosList: {
+      get() {
+        return this.$store.getters.filteredListFavoritos;
+      },
+      set(val) {
+        return (this.$store.state.favoritosList = val);
+      }
     }
   }
 };

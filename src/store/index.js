@@ -9,7 +9,8 @@ export default new Vuex.Store({
     teamsList: [],
     filterName: '',
     favoritosList: [],
-    detail: []
+    detail: [],
+    filterNameFav:''
   },
   mutations: {
     saveTeams(state, list) {
@@ -17,6 +18,9 @@ export default new Vuex.Store({
     },
     setFilterName(state, inputName) {
       state.filterName = inputName;
+    },
+    setFilterNameFav(state, inputName) {
+      state.filterNameFav = inputName;
     },
   },
   actions: {
@@ -31,12 +35,21 @@ export default new Vuex.Store({
     },
     filterName({ commit }, inputName) {
       commit('setFilterName', inputName)
+    },
+    filterNameFav({ commit }, inputName) {
+      commit('setFilterNameFav', inputName)
     }
   },
   getters: {
     filteredList: state => {
       let filteredCardList = state.teamsList.filter(item =>
         item.school.toLowerCase().includes(state.filterName.toLowerCase())
+      );
+      return filteredCardList;
+    },
+    filteredListFavoritos: state => {
+      let filteredCardList = state.favoritosList.filter(item =>
+        item.school.toLowerCase().includes(state.filterNameFav.toLowerCase())
       );
       return filteredCardList;
     }

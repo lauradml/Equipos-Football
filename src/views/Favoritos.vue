@@ -2,6 +2,9 @@
   <div class="about">
     <a name="up"></a>
     <h1 class="titel">Lista de favoritos</h1>
+    <div class="shearch">
+      <AppSearch @sendFilterData="sendInputValue"></AppSearch>
+    </div>
     <el-button class="az" type="primary" @click="aZ">A-Z</el-button>
     <div v-show="showEdit">
       <el-input
@@ -52,19 +55,24 @@
 </template>
 
 <script>
+import AppSearch from "@/components/AppSearch.vue";
+import { mapState } from "vuex";
 export default {
   name: "Favoritos",
+  components: {
+    AppSearch
+  },
   data() {
     return {
-      favoritosList: [],
+      // favoritosList: [],
       texFavorito: "",
       textoFavorito: "",
       showEdit: null,
-      addDatosAux: {}
+      addDatosAux: {},
+      filterName:""
     };
   },
   mounted() {
-    this.favoritosList = this.$store.state.favoritosList;
     if (localStorage.getItem("favoritosList")) {
       try {
         this.favoritosList = JSON.parse(localStorage.getItem("favoritosList"));
@@ -72,13 +80,25 @@ export default {
         localStorage.removeItem("favoritosList");
       }
     }
+    this.filterName=this.$store.state.filterNameFav
+  },
+
+  //reinicia la seleccion y pone todo los equipos que hay sin seleci
+  destroyed(){
+    debugger
+    this.$store.state.filterNameFav=""
+    
   },
   methods: {
     saveFavoritos() {
+      debugger
       const parsed = JSON.stringify(this.favoritosList);
       localStorage.setItem("favoritosList", parsed);
+      this.$store.state.favoritosList=this.favoritosList
+
     },
     deleteFavoritos(item) {
+      debugger
       let list = this.favoritosList;
       let datosdelete = list.find(e => e.school === item);
       let i = list.indexOf(datosdelete);
@@ -101,13 +121,32 @@ export default {
       this.showEdit = false;
       this.texFavorito = "";
     },
+
     aZ() {
-      debugger
       this.favoritosList.sort((a, b) => {
         if (a.school < b.school) return -1;
         if (b.school > a.school) return 1;
         return 0;
       });
+    },
+    sendInputValue(input) {
+      debugger
+      this.$store.dispatch("filterNameFav", input);
+      this.filterName=""
+    }
+  },
+  computed: {
+    ...mapState({
+      filterNameFav: "filterNameFav"
+    }),
+    favoritosList: {
+      get() {
+        debugger
+        return this.$store.getters.filteredListFavoritos;
+      },
+      set(val) {
+        return this.$store.state.favoritosList = val;
+      }
     }
   }
 };
@@ -117,7 +156,7 @@ export default {
 .titel {
   color: rgb(19, 85, 151);
 }
-.az{
+.az {
   margin-bottom: 10px;
 }
 .item {

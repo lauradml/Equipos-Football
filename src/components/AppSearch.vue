@@ -9,6 +9,7 @@
         @keyup.enter.native="saveSearch"
       ></InputApp>
       <ButtonInput @submit="saveSearch" :icon="'el-icon-search'"></ButtonInput>
+       <el-button type="primary" @click="clear">Quitar selección</el-button>
     </div>
   </div>
 </template>
@@ -36,10 +37,16 @@ export default {
   methods: {
     onInputValueChange(e) {
       this.inputValue = e;
+      this.serverText= e;
     },
     saveSearch() {
       this.$emit("sendFilterData", this.inputValue);
     },
+    clear(){
+      this.serverText= "Search..."
+      this.inputValue=""
+      this.saveSearch();
+    }
   }
 };
 </script>
