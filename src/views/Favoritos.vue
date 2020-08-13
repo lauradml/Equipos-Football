@@ -85,20 +85,17 @@ export default {
 
   //reinicia la seleccion y pone todo los equipos que hay sin seleci
   destroyed(){
-    debugger
     this.$store.state.filterNameFav=""
-    
   },
+  
   methods: {
     saveFavoritos() {
-      debugger
       const parsed = JSON.stringify(this.favoritosList);
       localStorage.setItem("favoritosList", parsed);
       this.$store.state.favoritosList=this.favoritosList
 
     },
     deleteFavoritos(item) {
-      debugger
       let list = this.favoritosList;
       let datosdelete = list.find(e => e.school === item);
       let i = list.indexOf(datosdelete);
@@ -130,7 +127,6 @@ export default {
       });
     },
     sendInputValue(input) {
-      debugger
       this.$store.dispatch("filterNameFav", input);
       this.filterName=""
     }
@@ -141,7 +137,6 @@ export default {
     }),
     favoritosList: {
       get() {
-        debugger
         return this.$store.getters.filteredListFavoritos;
       },
       set(val) {
